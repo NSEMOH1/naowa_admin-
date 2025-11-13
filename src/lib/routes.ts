@@ -41,5 +41,8 @@ export const routes = {
   },
   savings: {
     index: "/savings"
+  },
+  withdrawal: {
+    index: "/withdrawal"
   }
 };

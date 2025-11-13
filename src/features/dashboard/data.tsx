@@ -12,13 +12,13 @@ export const updateDashboardCards = async (icons: {
 
     const totalMembers = allMembers.pagination.totalMembers;
     const approvedMembers = allMembers.users.filter(
-      (member) => member.status === "APPROVED"
+      (member) => member.status === "ACTIVE"
     ).length;
     const rejectedMembers = allMembers.users.filter(
       (member) => member.status === "REJECTED"
     ).length;
     const pendingMembers = allMembers.users.filter(
-      (member) => member.status === "PENDING"
+      (member) => member.status === "INACTIVE"
     ).length;
 
     return [
@@ -32,7 +32,7 @@ export const updateDashboardCards = async (icons: {
       },
       {
         id: 2,
-        title: "Approved Members",
+        title: "Active Members",
         icon: icons.Box,
         count: approvedMembers.toLocaleString(),
         color: "#FEC53D",
@@ -48,7 +48,7 @@ export const updateDashboardCards = async (icons: {
       },
       {
         id: 4,
-        title: "Total Pending",
+        title: "InActive Members",
         icon: icons.History,
         count: pendingMembers.toLocaleString(),
         color: "#FF9066",
@@ -57,7 +57,6 @@ export const updateDashboardCards = async (icons: {
     ];
   } catch (error) {
     console.error("Error updating dashboard cards:", error);
-    // Return original static data as fallback
     return [
       {
         id: 1,
@@ -69,7 +68,7 @@ export const updateDashboardCards = async (icons: {
       },
       {
         id: 2,
-        title: "Approved Members",
+        title: "Active Members",
         icon: icons.Box,
         count: "0",
         color: "#FEC53D",
@@ -85,7 +84,7 @@ export const updateDashboardCards = async (icons: {
       },
       {
         id: 4,
-        title: "Total Pending",
+        title: "Inactive Members",
         icon: icons.History,
         count: "0",
         color: "#FF9066",

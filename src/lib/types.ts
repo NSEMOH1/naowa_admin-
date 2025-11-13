@@ -20,8 +20,7 @@ export interface Loan {
   createdAt: string;
   updatedAt: string;
   member: {
-    first_name: string;
-    last_name: string;
+    full_name: string;
   };
   reference: string;
   approvedBy: {
@@ -55,8 +54,7 @@ export interface Savings {
   amount: string;
   createdAt: string;
   member: {
-    first_name: string;
-    last_name: string;
+    full_name: string;
     email: string;
     phone: string;
   };
@@ -93,10 +91,11 @@ export interface TableColumn<T> {
 export interface Member {
   id: string | number;
   email: string;
-  first_name: string;
-  title: string;
-  last_name: string;
-  other_name: string;
+  full_name: string;
+  place_of_work: string;
+  occupation: string;
+  spouse_name: string;
+  marital_status: string;
   gender: string;
   phone: string;
   address: string;
@@ -111,10 +110,7 @@ export interface Member {
   totalSavings: number;
   monthlyDeduction: number;
   service_number: string;
-  status: "APPROVED" | "REJECTED" | "PENDING";
-  Personel: {
-    rank: string;
-  };
+  status: "APPROVED" | "REJECTED" | "PENDING" | "ACTIVE" | "INACTIVE";
   bank: [{ account_number: string; name: string }];
 }
 
@@ -139,7 +135,7 @@ export interface MembersParams {
   role?: string;
   createdAfter?: string;
   createdBefore?: string;
-  status?: "APPROVED" | "REJECTED" | "PENDING";
+  status?: "APPROVED" | "REJECTED" | "PENDING" | "ACTIVE" | "INACTIVE";
 }
 
 export interface PaginationState {

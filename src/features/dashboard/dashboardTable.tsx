@@ -14,14 +14,9 @@ const userColumns: TableColumn<Member>[] = [
     render: (id: number) => <span className="font-semibold">{id}</span>,
   },
   {
-    title: "First Name",
-    dataIndex: "first_name",
-    key: "first_name",
-  },
-  {
-    title: "Last Name",
-    dataIndex: "last_name",
-    key: "last_name",
+    title: "Full Name",
+    dataIndex: "full_name",
+    key: "full_name",
   },
   {
     title: "Phone Number",
@@ -64,9 +59,6 @@ const userColumns: TableColumn<Member>[] = [
 
 const buttons = [
   { name: "Total Members", filter: "all" },
-  { name: "Approved Members", filter: "APPROVED" },
-  { name: "Pending Members", filter: "PENDING" },
-  { name: "Rejected Members", filter: "REJECTED" },
 ];
 
 export default function DashboardTable() {

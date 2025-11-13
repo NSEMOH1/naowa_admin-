@@ -30,9 +30,8 @@ const Savings = () => {
         const formattedSavings = response.savings.map((saving: Savings) => ({
           id: saving.id,
           name:
-            `${saving.member?.first_name || ""} ${
-              saving.member?.last_name || ""
-            }`.trim() || "N/A",
+            `${saving.member?.full_name || ""}
+            `.trim() || "N/A",
           serviceNumber: saving.reference || "N/A",
           email: saving.member?.email || "N/A",
           phone: saving.member?.phone || "N/A",
@@ -73,11 +72,6 @@ const Savings = () => {
       ),
     },
     {
-      title: "Service Number",
-      dataIndex: "serviceNumber" as const,
-      key: "serviceNumber",
-    },
-    {
       title: "Email",
       dataIndex: "email" as const,
       key: "email",
@@ -107,7 +101,13 @@ const Savings = () => {
       dataIndex: "amount" as const,
       key: "amount",
       render: (amount: number) => (
-        <span className="font-semibold">₦{amount.toLocaleString()}</span>
+        <span
+          className={`font-semibold ${
+            amount < 0 ? "text-red-600" : "text-green-600"
+          }`}
+        >
+          ₦{amount.toLocaleString()}
+        </span>
       ),
     },
   ];

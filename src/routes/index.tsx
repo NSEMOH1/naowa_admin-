@@ -29,6 +29,7 @@ const LoanRepaymentReport = lazy(
   () => import("../pages/report/repayment/index.tsx")
 );
 const Savings = lazy(() => import("../pages/savings/index.tsx"));
+const Withdrawal = lazy(() => import("../pages/withdrawal/index.tsx"))
 const Unauthorized = lazy(() => import("../pages/unauthorized/index.tsx"));
 
 const ROUTE_PERMISSIONS = {
@@ -41,6 +42,7 @@ const ROUTE_PERMISSIONS = {
   accountmanagement: [UserRole.ADMIN],
   report: [UserRole.ADMIN],
   savings: [UserRole.ADMIN],
+  withdrawal: [UserRole.ADMIN],
 };
 
 export const sappersRoutes = () => {
@@ -95,6 +97,14 @@ export const sappersRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={ROUTE_PERMISSIONS.uploads}>
             <Uploads />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={routes.withdrawal.index}
+        element={
+          <ProtectedRoute allowedRoles={ROUTE_PERMISSIONS.withdrawal}>
+            <Withdrawal />
           </ProtectedRoute>
         }
       />

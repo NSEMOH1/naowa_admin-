@@ -1,12 +1,6 @@
 import {
   Badge,
   Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalOverlay,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -14,7 +8,7 @@ import DataTable from "../../components/table";
 import type { Member, TableColumn } from "../../lib/types";
 import { useEffect, useMemo, useState } from "react";
 import MemberDetailsView from "./membersDetails";
-import { Check, Copy, Edit, Eye, Key, Trash2, X } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
 import ActionModal from "../../components/actionModal";
 import { useMembersData } from "../../hooks/useMember";
 import api from "../../api";
@@ -29,14 +23,9 @@ const membersColumns: TableColumn<Member>[] = [
     render: (id: number) => <span className="font-semibold">{id}</span>,
   },
   {
-    title: "First Name",
-    dataIndex: "first_name",
+    title: "Full Name",
+    dataIndex: "full_name",
     key: "first_name",
-  },
-  {
-    title: "Last Name",
-    dataIndex: "last_name",
-    key: "last_name",
   },
   {
     title: "Phone Number",
@@ -77,17 +66,11 @@ const membersColumns: TableColumn<Member>[] = [
   },
 ];
 
-const buttons = [
-  { name: "Total Members", filter: "all" },
-  { name: "Approved Members", filter: "APPROVED" },
-  { name: "Pending Members", filter: "PENDING" },
-  { name: "Rejected Members", filter: "REJECTED" },
-];
+const buttons = [{ name: "Total Members", filter: "all" }];
 
 export default function MembersTable() {
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>("all");
-  const [password, _setPassword] = useState("GD236823");
   const toast = useToast();
   const { members, loading, pagination, loadMembers } = useMembersData();
   const [paginationState, setPaginationState] = useState({
@@ -107,24 +90,9 @@ export default function MembersTable() {
     }));
   };
   const {
-    isOpen: isAcceptOpen,
-    onOpen: onAcceptOpen,
-    onClose: onAcceptClose,
-  } = useDisclosure();
-  const {
-    isOpen: isRejectOpen,
-    onOpen: onRejectOpen,
-    onClose: onRejectClose,
-  } = useDisclosure();
-  const {
     isOpen: isDeleteOpen,
     onOpen: onDeleteOpen,
     onClose: onDeleteClose,
-  } = useDisclosure();
-  const {
-    isOpen: isGeneratePasswordOpen,
-    onOpen: onGeneratePasswordOpen,
-    onClose: onGeneratePasswordClose,
   } = useDisclosure();
 
   const handleViewDetails = (selectedRows: Member[]) => {
@@ -137,138 +105,6 @@ export default function MembersTable() {
         status: "error",
       });
     }
-  };
-
-  const handleApprove = async (selectedRows: Member[]) => {
-    if (selectedRows.length !== 1) {
-      toast({
-        title: "Error",
-        description: "Please select exactly one member to approve",
-        status: "error",
-      });
-      return;
-    }
-
-    const member = selectedRows[0];
-    try {
-      await api.get(`/api/members/${member.id}/approve`);
-      toast({ title: "Member Approved Successfully", status: "success" });
-      onAcceptOpen();
-      loadMembers({
-        page: paginationState.page,
-        limit: paginationState.limit,
-        status:
-          activeFilter === "all"
-            ? undefined
-            : (activeFilter as "APPROVED" | "PENDING" | "REJECTED"),
-      });
-    } catch (err) {
-      let errorMessage = "Approval Failed";
-      if (typeof err === "object" && err !== null && "response" in err) {
-        const response = (err as any).response;
-        if (response && response.data && response.data.message) {
-          errorMessage = response.data.message;
-        }
-      }
-      toast({
-        title: "Error",
-        description: errorMessage,
-        status: "error",
-      });
-    }
-  };
-
-  const handleReject = async (selectedRows: Member[]) => {
-    if (selectedRows.length !== 1) {
-      toast({
-        title: "Error",
-        description: "Please select exactly one member to reject",
-        status: "error",
-      });
-      return;
-    }
-
-    const member = selectedRows[0];
-    try {
-      await api.get(`/api/members/${member.id}/reject`);
-      toast({ title: "Member Rejected Successfully", status: "success" });
-      onRejectOpen();
-      loadMembers({
-        page: paginationState.page,
-        limit: paginationState.limit,
-        status:
-          activeFilter === "all"
-            ? undefined
-            : (activeFilter as "APPROVED" | "PENDING" | "REJECTED"),
-      });
-    } catch (err) {
-      let errorMessage = "Rejection Failed";
-      if (typeof err === "object" && err !== null && "response" in err) {
-        const response = (err as any).response;
-        if (response && response.data && response.data.message) {
-          errorMessage = response.data.message;
-        }
-      }
-      toast({
-        title: "Error",
-        description: errorMessage,
-        status: "error",
-      });
-    }
-  };
-
-  const handleGeneratePassword = async (selectedRows: Member[]) => {
-    if (selectedRows.length !== 1) {
-      toast({
-        title: "Error",
-        description:
-          "Please select exactly one member to generate password for",
-        status: "error",
-      });
-      return;
-    }
-
-    const member = selectedRows[0];
-    try {
-      const response = await api.post(
-        `/api/member/${member.id}/generate-password`
-      );
-
-      _setPassword(response.data.data.temporaryPassword);
-
-      toast({
-        title: "Password Generated",
-        description: "New temporary password created successfully",
-        status: "success",
-      });
-
-      onGeneratePasswordOpen();
-    } catch (err) {
-      let errorMessage = "Password generation failed";
-      if (typeof err === "object" && err !== null && "response" in err) {
-        const response = (err as any).response;
-        if (response?.data?.message) {
-          errorMessage = response.data.message;
-        }
-      }
-      toast({
-        title: "Error",
-        description: errorMessage,
-        status: "error",
-      });
-    }
-  };
-
-  const handleEdit = (selectedRows: Member[]) => {
-    if (selectedRows.length !== 1) {
-      toast({
-        title: "Error",
-        description: "Please select exactly one member to edit",
-        status: "error",
-      });
-      return;
-    }
-    setSelectedMember(selectedRows[0]);
   };
 
   const handleDelete = async (selectedRows: Member[]) => {
@@ -310,15 +146,6 @@ export default function MembersTable() {
     }
   };
 
-  const handleCopyPassword = (password: string) => {
-    try {
-      navigator.clipboard.writeText(password);
-      toast({ title: "Password Copied", status: "success" });
-    } catch (e) {
-      toast({ title: "Failed to copy password", status: "error" });
-    }
-  };
-
   const defaultActionButtons = [
     {
       name: "View Details",
@@ -326,34 +153,6 @@ export default function MembersTable() {
       colorScheme: "blue",
       variant: "solid",
       onClick: handleViewDetails,
-    },
-    {
-      name: "Approve",
-      icon: <Check size={16} />,
-      colorScheme: "green",
-      variant: "solid",
-      onClick: handleApprove,
-    },
-    {
-      name: "Generate Password",
-      icon: <Key size={16} />,
-      colorScheme: "purple",
-      variant: "solid",
-      onClick: handleGeneratePassword,
-    },
-    {
-      name: "Reject",
-      icon: <X size={16} />,
-      colorScheme: "red",
-      variant: "solid",
-      onClick: handleReject,
-    },
-    {
-      name: "Edit",
-      icon: <Edit size={16} />,
-      colorScheme: "orange",
-      variant: "solid",
-      onClick: handleEdit,
     },
     {
       name: "Delete",
@@ -406,18 +205,20 @@ export default function MembersTable() {
     if (activeFilter === "all") {
       return members;
     }
-    return members.filter((member: { status: string; }) => member.status === activeFilter);
+    return members.filter(
+      (member: { status: string }) => member.status === activeFilter
+    );
   }, [members, activeFilter]);
 
   const statusCounts = useMemo(() => {
     const approved = members.filter(
-      (member: { status: string; }) => member.status === "APPROVED"
+      (member: { status: string }) => member.status === "APPROVED"
     ).length;
     const pending = members.filter(
-      (member: { status: string; }) => member.status === "PENDING"
+      (member: { status: string }) => member.status === "PENDING"
     ).length;
     const rejected = members.filter(
-      (member: { status: string; }) => member.status === "REJECTED"
+      (member: { status: string }) => member.status === "REJECTED"
     ).length;
 
     return {
@@ -548,62 +349,12 @@ export default function MembersTable() {
       />
 
       <ActionModal
-        isOpen={isAcceptOpen}
-        onClose={onAcceptClose}
-        status="success"
-        title=""
-        message={`Member Successfully Approved`}
-      />
-
-      <ActionModal
-        isOpen={isRejectOpen}
-        onClose={onRejectClose}
-        status="error"
-        title=""
-        message={`Member Successfully Rejected`}
-      />
-
-      <ActionModal
         isOpen={isDeleteOpen}
         onClose={onDeleteClose}
         status="error"
         title=""
         message={`Member Successfully Deleted`}
       />
-      <Modal isOpen={isGeneratePasswordOpen} onClose={onGeneratePasswordClose}>
-        <ModalOverlay />
-        <ModalContent bg="#EAF3F9">
-          <ModalCloseButton />
-          <ModalBody>
-            <div className="mt-10">
-              <p className="font-bold text-xl text-center">
-                Generated Temporary Password
-              </p>
-              <p className="text-sm text-center text-gray-500 mt-2">
-                This password should be shared securely with the member
-              </p>
-            </div>
-            <div className="bg-[#0089ED] text-white p-4 mt-6 rounded-lg flex flex-col gap-6">
-              <p className="flex justify-end gap-2">
-                Copy Password
-                <Copy
-                  className="cursor-pointer"
-                  onClick={() => handleCopyPassword(password)}
-                />
-              </p>
-              <p className="text-center text-xl font-mono text-green-200">
-                {password}
-              </p>
-            </div>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onGeneratePasswordClose}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </div>
   );
 }
