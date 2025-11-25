@@ -209,3 +209,26 @@ export interface UseUsersDataReturn {
   pagination: PaginationState;
   loadUsers: (params?: UsersParams) => Promise<void>;
 }
+
+export interface Withdrawal {
+  id: string;
+  reference: string;
+  amount: number | string;
+  status: "PENDING" | "APPROVED" | "REJECTED" | "COMPLETED";
+  reason?: string | null;
+  rejectionReason?: string | null;
+  requestedAt: string;
+  approvedAt?: string | null;
+  rejectedAt?: string | null;
+  member: {
+    id: string;
+    full_name: string;
+    email: string;
+    phone: string;
+  };
+  category: {
+    id: string;
+    name: string;
+    type: string;
+  };
+}

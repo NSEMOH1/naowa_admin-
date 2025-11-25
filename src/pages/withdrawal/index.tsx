@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  CheckCircle,
-  XCircle,
-  Clock,
-  Eye,
-  RefreshCw,
-} from "lucide-react";
+import { CheckCircle, XCircle, Clock, Eye, RefreshCw } from "lucide-react";
 import {
   Modal,
   ModalOverlay,
@@ -21,29 +15,7 @@ import {
 } from "@chakra-ui/react";
 import api from "../../api";
 import DataTable from "../../components/table";
-
-interface Withdrawal {
-  id: string;
-  reference: string;
-  amount: number;
-  status: "PENDING" | "APPROVED" | "REJECTED" | "COMPLETED";
-  reason?: string;
-  rejectionReason?: string;
-  requestedAt: string;
-  approvedAt?: string;
-  rejectedAt?: string;
-  member: {
-    id: string;
-    full_name: string;
-    email: string;
-    phone: string;
-  };
-  category: {
-    id: string;
-    name: string;
-    type: string;
-  };
-}
+import type { Withdrawal } from "../../lib/types";
 
 const Withdrawals = () => {
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
@@ -58,17 +30,37 @@ const Withdrawals = () => {
   const [rejectionReason, setRejectionReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
 
-  const { isOpen: isViewModalOpen, onOpen: onViewModalOpen, onClose: onViewModalClose } = useDisclosure();
-  const { isOpen: isApproveModalOpen, onOpen: onApproveModalOpen, onClose: onApproveModalClose } = useDisclosure();
-  const { isOpen: isRejectModalOpen, onOpen: onRejectModalOpen, onClose: onRejectModalClose } = useDisclosure();
+  const {
+    isOpen: isViewModalOpen,
+    onOpen: onViewModalOpen,
+    onClose: onViewModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isApproveModalOpen,
+    onOpen: onApproveModalOpen,
+    onClose: onApproveModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isRejectModalOpen,
+    onOpen: onRejectModalOpen,
+    onClose: onRejectModalClose,
+  } = useDisclosure();
 
   const fetchWithdrawals = async () => {
     setLoading(true);
     try {
       const response = await api.get("/api/withdrawal/admin");
       if (response.data?.success) {
-        setWithdrawals(response.data.data);
-        setFilteredWithdrawals(response.data.data);
+        const transformedData = response.data.data.map((withdrawal: any) => ({
+          ...withdrawal,
+          amount:
+            typeof withdrawal.amount === "string"
+              ? parseFloat(withdrawal.amount)
+              : withdrawal.amount,
+        }));
+
+        setWithdrawals(transformedData);
+        setFilteredWithdrawals(transformedData);
       }
     } catch (error) {
       console.error("Error fetching withdrawals:", error);
@@ -178,7 +170,8 @@ const Withdrawals = () => {
     );
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return "N/A";
     return new Date(dateString).toLocaleString("en-US", {
       year: "numeric",
       month: "short",
@@ -188,80 +181,89 @@ const Withdrawals = () => {
     });
   };
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number | string) => {
+    const numAmount = typeof amount === "string" ? parseFloat(amount) : amount;
     return new Intl.NumberFormat("en-NG", {
       style: "currency",
       currency: "NGN",
-    }).format(amount);
+    }).format(numAmount);
   };
 
   const stats = {
     total: withdrawals.length,
     pending: withdrawals.filter((w) => w.status === "PENDING").length,
-    approved: withdrawals.filter((w) => w.status === "APPROVED").length,
+    approved: withdrawals.filter((w) => w.status === "COMPLETED").length,
     rejected: withdrawals.filter((w) => w.status === "REJECTED").length,
-    totalAmount: withdrawals.reduce((sum, w) => sum + w.amount, 0),
+    totalAmount: withdrawals.reduce((sum, w) => {
+      const amount =
+        typeof w.amount === "string" ? parseFloat(w.amount) : w.amount;
+      return sum + amount;
+    }, 0),
   };
 
   const columns = [
     {
-      header: "Reference",
-      accessor: "reference" as keyof Withdrawal,
+      title: "Reference",
+      dataIndex: "reference" as const,
+      key: "reference",
       render: (value: any) => (
-        <div className="text-sm font-medium text-gray-900">{value}</div>
-      ),
-    },
-    {
-      header: "Member",
-      accessor: "member" as keyof Withdrawal,
-      render: (value: any) => (
-        <div>
-          <div className="text-sm font-medium text-gray-900">
-            {value.full_name}
-          </div>
-          <div className="text-sm text-gray-500">{value.email}</div>
+        <div className="text-sm font-medium text-gray-900">
+          {value || "N/A"}
         </div>
       ),
     },
     {
-      header: "Amount",
-      accessor: "amount" as keyof Withdrawal,
+      title: "Member",
+      dataIndex: "member" as const,
+      key: "member",
+      render: (value: any) => {
+        if (!value) return <div className="text-sm text-gray-500">N/A</div>;
+
+        return (
+          <div>
+            <div className="text-sm font-medium text-gray-900">
+              {value.first_name || ""} {value.last_name || ""}
+            </div>
+            <div className="text-sm text-gray-500">{value.email || "N/A"}</div>
+          </div>
+        );
+      },
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount" as const,
+      key: "amount",
       render: (value: any) => (
         <div className="text-sm font-bold text-gray-900">
-          {formatCurrency(value)}
+          {value ? formatCurrency(value) : "N/A"}
         </div>
       ),
     },
     {
-      header: "Category",
-      accessor: "category" as keyof Withdrawal,
-      render: (value: any) => (
-        <div className="text-sm text-gray-900">{value.name}</div>
-      ),
+      title: "Category",
+      dataIndex: "category" as const,
+      key: "category",
+      render: (value: any) => {
+        if (!value) return <div className="text-sm text-gray-500">N/A</div>;
+        return (
+          <div className="text-sm text-gray-900">{value.name || "N/A"}</div>
+        );
+      },
     },
     {
-      header: "Status",
-      accessor: "status" as keyof Withdrawal,
-      render: (value: any) => getStatusBadge(value),
+      title: "Status",
+      dataIndex: "status" as const,
+      key: "status",
+      render: (value: any) =>
+        value ? getStatusBadge(value) : <span>N/A</span>,
     },
     {
-      header: "Date",
-      accessor: "requestedAt" as keyof Withdrawal,
+      title: "Date",
+      dataIndex: "requestedAt" as const,
+      key: "requestedAt",
       render: (value: any) => (
         <div className="text-sm text-gray-900">{formatDate(value)}</div>
       ),
-    },
-  ];
-
-  const actions = [
-    {
-      label: "View Details",
-      onClick: (withdrawal: Withdrawal) => {
-        setSelectedWithdrawal(withdrawal);
-        onViewModalOpen();
-      },
-      icon: <Eye className="w-4 h-4" />,
-      variant: "primary" as const,
     },
   ];
 
@@ -277,9 +279,7 @@ const Withdrawals = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <p className="text-3xl font-bold text-gray-900">
-            Withdrawal
-          </p>
+          <p className="text-3xl font-bold text-gray-900">Withdrawal</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
@@ -354,10 +354,26 @@ const Withdrawals = () => {
         <DataTable
           data={filteredWithdrawals}
           columns={columns}
-          actions={actions}
+          rowKey="id"
+          actionButtons={[
+            {
+              name: "View Details",
+              icon: <Eye className="w-4 h-4" />,
+              colorScheme: "blue",
+              variant: "solid",
+              onClick: (selectedRows: Withdrawal[]) => {
+                if (selectedRows.length > 0) {
+                  setSelectedWithdrawal(selectedRows[0]);
+                  onViewModalOpen();
+                }
+              },
+            },
+          ]}
+          showActionBar={true}
         />
       </div>
 
+      {/* View Details Modal */}
       <Modal isOpen={isViewModalOpen} onClose={onViewModalClose} size="xl">
         <ModalOverlay />
         <ModalContent>
@@ -365,121 +381,124 @@ const Withdrawals = () => {
             <div>
               <h2 className="text-xl font-bold">Withdrawal Details</h2>
               <p className="text-sm text-gray-600 mt-1">
-                {selectedWithdrawal?.reference}
+                {selectedWithdrawal?.reference || "N/A"}
               </p>
             </div>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <div className="space-y-6">
-              <div>
-                {selectedWithdrawal && getStatusBadge(selectedWithdrawal.status)}
-              </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-3">
-                  Member Information
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Name:</span>
-                    <span className="font-medium">
-                      {selectedWithdrawal?.member.full_name}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Email:</span>
-                    <span className="font-medium">
-                      {selectedWithdrawal?.member.email}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Phone:</span>
-                    <span className="font-medium">
-                      {selectedWithdrawal?.member.phone}
-                    </span>
+            {selectedWithdrawal && (
+              <div className="space-y-6">
+                <div>{getStatusBadge(selectedWithdrawal.status)}</div>
+
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-gray-900 mb-3">
+                    Member Information
+                  </h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Full Name:</span>
+                      <span className="font-medium">
+                        {selectedWithdrawal.member?.full_name || "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Email:</span>
+                      <span className="font-medium">
+                        {selectedWithdrawal.member?.email || "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Phone:</span>
+                      <span className="font-medium">
+                        {selectedWithdrawal.member?.phone || "N/A"}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="bg-blue-50 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-3">
-                  Withdrawal Information
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Amount:</span>
-                    <span className="font-bold text-lg">
-                      {selectedWithdrawal && formatCurrency(selectedWithdrawal.amount)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Category:</span>
-                    <span className="font-medium">
-                      {selectedWithdrawal?.category.name}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Requested:</span>
-                    <span className="font-medium">
-                      {selectedWithdrawal && formatDate(selectedWithdrawal.requestedAt)}
-                    </span>
-                  </div>
-                  {selectedWithdrawal?.reason && (
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-gray-900 mb-3">
+                    Withdrawal Information
+                  </h3>
+                  <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Reason:</span>
-                      <span className="font-medium">
-                        {selectedWithdrawal.reason}
+                      <span className="text-gray-600">Amount:</span>
+                      <span className="font-bold text-lg">
+                        {formatCurrency(selectedWithdrawal.amount)}
                       </span>
                     </div>
-                  )}
-                  {selectedWithdrawal?.approvedAt && (
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Approved:</span>
+                      <span className="text-gray-600">Category:</span>
                       <span className="font-medium">
-                        {formatDate(selectedWithdrawal.approvedAt)}
+                        {selectedWithdrawal.category?.name || "N/A"}
                       </span>
                     </div>
-                  )}
-                  {selectedWithdrawal?.rejectedAt && (
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Rejected:</span>
+                      <span className="text-gray-600">Requested:</span>
                       <span className="font-medium">
-                        {formatDate(selectedWithdrawal.rejectedAt)}
+                        {formatDate(selectedWithdrawal.requestedAt)}
                       </span>
                     </div>
-                  )}
-                  {selectedWithdrawal?.rejectionReason && (
-                    <div className="mt-4">
-                      <span className="text-gray-600 block mb-2">
-                        Rejection Reason:
-                      </span>
-                      <div className="bg-red-50 border border-red-200 rounded p-3 text-red-800">
-                        {selectedWithdrawal.rejectionReason}
+                    {selectedWithdrawal.reason && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Reason:</span>
+                        <span className="font-medium">
+                          {selectedWithdrawal.reason}
+                        </span>
                       </div>
-                    </div>
-                  )}
+                    )}
+                    {selectedWithdrawal.approvedAt && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Approved:</span>
+                        <span className="font-medium">
+                          {formatDate(selectedWithdrawal.approvedAt)}
+                        </span>
+                      </div>
+                    )}
+                    {selectedWithdrawal.rejectedAt && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Rejected:</span>
+                        <span className="font-medium">
+                          {formatDate(selectedWithdrawal.rejectedAt)}
+                        </span>
+                      </div>
+                    )}
+                    {selectedWithdrawal.rejectionReason && (
+                      <div className="mt-4">
+                        <span className="text-gray-600 block mb-2">
+                          Rejection Reason:
+                        </span>
+                        <div className="bg-red-50 border border-red-200 rounded p-3 text-red-800">
+                          {selectedWithdrawal.rejectionReason}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {selectedWithdrawal?.status === "PENDING" && (
-                <div className="flex gap-3 pt-4">
-                  <button
-                    onClick={onApproveModalOpen}
-                    className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 flex items-center justify-center gap-2 font-medium"
-                  >
-                    <CheckCircle className="w-5 h-5" />
-                    Approve
-                  </button>
-                  <button
-                    onClick={onRejectModalOpen}
-                    className="flex-1 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 flex items-center justify-center gap-2 font-medium"
-                  >
-                    <XCircle className="w-5 h-5" />
-                    Reject
-                  </button>
-                </div>
-              )}
-            </div>
+                {selectedWithdrawal.status === "PENDING" && (
+                  <div className="flex gap-3 pt-4">
+                    <Button
+                      onClick={onApproveModalOpen}
+                      colorScheme="green"
+                      className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 flex items-center justify-center gap-2 font-medium"
+                    >
+                      <CheckCircle className="w-5 h-5" />
+                      Approve
+                    </Button>
+                    <Button
+                      onClick={onRejectModalOpen}
+                      colorScheme="red"
+                      className="flex-1 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 flex items-center justify-center gap-2 font-medium"
+                    >
+                      <XCircle className="w-5 h-5" />
+                      Reject
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
           </ModalBody>
           <ModalFooter>
             <Button onClick={onViewModalClose}>Close</Button>
@@ -487,6 +506,7 @@ const Withdrawals = () => {
         </ModalContent>
       </Modal>
 
+      {/* Approve Modal */}
       <Modal isOpen={isApproveModalOpen} onClose={onApproveModalClose}>
         <ModalOverlay />
         <ModalContent>
@@ -496,15 +516,19 @@ const Withdrawals = () => {
             <p className="text-gray-600 mb-4">
               Are you sure you want to approve this withdrawal?
             </p>
-            <div className="bg-blue-50 rounded-lg p-4">
-              <p className="text-sm text-gray-700 mb-2">
-                <strong>Amount:</strong>{" "}
-                {selectedWithdrawal && formatCurrency(selectedWithdrawal.amount)}
-              </p>
-              <p className="text-sm text-gray-700">
-                <strong>Member:</strong> {selectedWithdrawal?.member.full_name}
-              </p>
-            </div>
+            {selectedWithdrawal && (
+              <div className="bg-blue-50 rounded-lg p-4">
+                <p className="text-sm text-gray-700 mb-2">
+                  <strong>Amount:</strong>{" "}
+                  {formatCurrency(selectedWithdrawal.amount)}
+                </p>
+                <p className="text-sm text-gray-700">
+                  <strong>Member:</strong>{" "}
+                  {selectedWithdrawal.member?.full_name || "N/A"}{" "}
+                
+                </p>
+              </div>
+            )}
           </ModalBody>
           <ModalFooter>
             <Button variant="outline" mr={3} onClick={onApproveModalClose}>
@@ -531,15 +555,18 @@ const Withdrawals = () => {
               Please provide a reason for rejection
             </p>
             <div className="space-y-4">
-              <div className="bg-blue-50 rounded-lg p-4">
-                <p className="text-sm text-gray-700 mb-2">
-                  <strong>Amount:</strong>{" "}
-                  {selectedWithdrawal && formatCurrency(selectedWithdrawal.amount)}
-                </p>
-                <p className="text-sm text-gray-700">
-                  <strong>Member:</strong> {selectedWithdrawal?.member.full_name}
-                </p>
-              </div>
+              {selectedWithdrawal && (
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-700 mb-2">
+                    <strong>Amount:</strong>{" "}
+                    {formatCurrency(selectedWithdrawal.amount)}
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    <strong>Member:</strong>{" "}
+                    {selectedWithdrawal.member?.full_name || "N/A"}{" "}
+                  </p>
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Rejection Reason *
