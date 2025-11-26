@@ -92,6 +92,7 @@ export interface Member {
   id: string | number;
   email: string;
   full_name: string;
+  username: string;
   place_of_work: string;
   occupation: string;
   spouse_name: string;

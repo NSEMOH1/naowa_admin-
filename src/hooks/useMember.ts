@@ -27,7 +27,7 @@ export const useMembersData = (): UseMembersDataReturn => {
       setMembers(response.users);
       setPagination({
         page: response.pagination.currentPage,
-        limit: 10,
+        limit: params.limit || 10, 
         total: response.pagination.totalMembers,
         totalPages: response.pagination.totalPages,
       });

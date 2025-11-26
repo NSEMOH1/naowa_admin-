@@ -1,6 +1,7 @@
 import {
   Badge,
   Button,
+  Input,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -71,6 +72,7 @@ const buttons = [{ name: "Total Members", filter: "all" }];
 export default function MembersTable() {
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const toast = useToast();
   const { members, loading, pagination, loadMembers } = useMembersData();
   const [paginationState, setPaginationState] = useState({
@@ -79,16 +81,16 @@ export default function MembersTable() {
   });
 
   const handleExportData = () => {
-    return filteredMembers.map((member: any) => ({
+    return members.map((member: any) => ({
       ID: member.id,
-      "First Name": member.first_name,
-      "Last Name": member.last_name,
+      "Full Name": member.full_name,
       "Phone Number": member.phone,
       Email: member.email,
-      SVN: member.service_number || "N/A",
+      username: member.username || "N/A",
       Status: member.status,
     }));
   };
+
   const {
     isOpen: isDeleteOpen,
     onOpen: onDeleteOpen,
@@ -198,17 +200,28 @@ export default function MembersTable() {
     loadMembers({
       page: paginationState.page,
       limit: paginationState.limit,
+      status:
+        activeFilter === "all"
+          ? undefined
+          : (activeFilter as "APPROVED" | "PENDING" | "REJECTED"),
     });
-  }, []);
+  }, [paginationState.page, paginationState.limit, activeFilter]);
+
+  const handleSearchClick = () => {
+    loadMembers({
+      page: 1,
+      limit: paginationState.limit,
+      search: searchTerm,
+      status:
+        activeFilter === "all"
+          ? undefined
+          : (activeFilter as "APPROVED" | "PENDING" | "REJECTED"),
+    });
+  };
 
   const filteredMembers = useMemo(() => {
-    if (activeFilter === "all") {
-      return members;
-    }
-    return members.filter(
-      (member: { status: string }) => member.status === activeFilter
-    );
-  }, [members, activeFilter]);
+    return members;
+  }, [members]);
 
   const statusCounts = useMemo(() => {
     const approved = members.filter(
@@ -256,10 +269,22 @@ export default function MembersTable() {
               colorScheme={activeFilter === button.filter ? "blue" : "gray"}
               size="sm"
               className="transition-all duration-200"
+              mr={6}
+              mt={1}
             >
               {button.name}
             </Button>
           ))}
+          <Input
+            placeholder="Search by Name or Email"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            size="md"
+            width="300px"
+          />
+          <Button onClick={handleSearchClick} colorScheme="blue">
+            Search
+          </Button>
         </div>
         <button
           style={{
@@ -285,12 +310,9 @@ export default function MembersTable() {
 
               const columns = [
                 { key: "ID", header: "ID", width: 10 },
-                { key: "First Name", header: "First Name", width: 20 },
-                { key: "Last Name", header: "Last Name", width: 20 },
-                { key: "Rank", header: "Rank", width: 15 },
+                { key: "Full Name", header: "Full Name", width: 20 },
                 { key: "Phone Number", header: "Phone Number", width: 18 },
                 { key: "Email", header: "Email", width: 30 },
-                { key: "SVN", header: "SVN", width: 15 },
                 { key: "Status", header: "Status", width: 15 },
               ];
 
