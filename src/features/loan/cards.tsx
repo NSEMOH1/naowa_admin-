@@ -97,7 +97,7 @@ export default function LoanCards() {
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 w-full">
-            {loanCards.map((data, index) => (
+            {loanCards.map((data, _index) => (
                 <Card
                     key={data.id}
                     className="w-full transition-all duration-300 ease-in-out hover:border-black hover:border-2 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
