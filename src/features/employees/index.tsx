@@ -266,7 +266,7 @@ export default function MembersTable() {
               key={index}
               onClick={() => handleFilterClick(button.filter)}
               variant={activeFilter === button.filter ? "solid" : "outline"}
-              colorScheme={activeFilter === button.filter ? "blue" : "gray"}
+              colorScheme={activeFilter === button.filter ? "red" : "gray"}
               size="sm"
               className="transition-all duration-200"
               mr={6}
@@ -282,13 +282,13 @@ export default function MembersTable() {
             size="md"
             width="300px"
           />
-          <Button onClick={handleSearchClick} colorScheme="blue">
+          <Button onClick={handleSearchClick} colorScheme="red">
             Search
           </Button>
         </div>
         <button
           style={{
-            background: "green",
+            background: "black",
             color: "white",
             padding: "8px 16px",
             borderRadius: "5px",
@@ -307,7 +307,6 @@ export default function MembersTable() {
                 });
                 return;
               }
-
               const columns = [
                 { key: "ID", header: "ID", width: 10 },
                 { key: "Full Name", header: "Full Name", width: 20 },

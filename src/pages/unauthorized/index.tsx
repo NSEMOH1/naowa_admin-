@@ -2,11 +2,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { UserRole } from '../../lib/types';
+// import { UserRole } from '../../lib/types';
 
 const Unauthorized: React.FC = () => {
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
 
     const handleGoBack = () => {
         navigate(-1);
@@ -17,22 +17,19 @@ const Unauthorized: React.FC = () => {
     };
 
     const handleLogout = () => {
-        logout();
         navigate('/');
     };
 
-    const getRoleDisplayName = (role: string) => {
-        switch (role) {
-            case UserRole.STAFF:
-                return 'Staff';
-            case UserRole.ADMIN:
-                return 'Admin';
-            case UserRole.SUPER_ADMIN:
-                return 'Super Admin';
-            default:
-                return 'User';
-        }
-    };
+    // const getRoleDisplayName = (role: string) => {
+    //     switch (role) {
+    //         case UserRole.STAFF:
+    //             return 'Staff';
+    //         case UserRole.ADMIN:
+    //             return 'Admin';
+    //         default:
+    //             return 'User';
+    //     }
+    // };
 
     return (
         <div className="min-h-screen flex flex-col justify-center items-center px-4">
@@ -87,9 +84,9 @@ const Unauthorized: React.FC = () => {
                                         />
                                     </svg>
                                     <div className="text-left">
-                                        <p className="text-sm text-blue-800">
-                                            <span className="font-medium">Current Role:</span> {getRoleDisplayName(user.role)}
-                                        </p>
+                                        {/* <p className="text-sm text-blue-800">
+                                            <span className="font-medium">Current Role:</span> {getRoleDisplayName(user)}
+                                        </p> */}
                                         <p className="text-xs text-blue-600 mt-1">
                                             Logged in as: {user.email}
                                         </p>
