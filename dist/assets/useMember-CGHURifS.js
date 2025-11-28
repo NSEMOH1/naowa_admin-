@@ -1,6 +1,0 @@
-import{f as u,e as p,r as n}from"./index-CRMG5bzS.js";/**
- * @license lucide-react v0.540.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */const d=[["path",{d:"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2",key:"975kel"}],["circle",{cx:"12",cy:"7",r:"4",key:"17ys0d"}]],b=u("user",d),f=async(c={})=>{const{page:i=1,limit:l=10,search:r="",sortBy:m="created_at",sortOrder:a="desc",role:s,status:o,createdAfter:g,createdBefore:t}=c;try{return(await p.get("/api/members",{params:{page:i,limit:l,search:r,sortBy:m,sortOrder:a,...s&&{role:s},...o&&{status:o},...g&&{createdAfter:g},...t&&{createdBefore:t}}})).data}catch(e){throw console.error("Error fetching members:",e),e}},h=()=>{const[c,i]=n.useState([]),[l,r]=n.useState(!1),[m,a]=n.useState(null),[s,o]=n.useState({page:1,limit:10,total:0,totalPages:0});return{members:c,loading:l,error:m,pagination:s,loadMembers:async(t={})=>{r(!0),a(null);try{const e=await f(t);i(e.users),o({page:e.pagination.currentPage,limit:t.limit||10,total:e.pagination.totalMembers,totalPages:e.pagination.totalPages})}catch(e){a(e instanceof Error?e.message:"An error occurred")}finally{r(!1)}}}};export{b as U,f,h as u};
