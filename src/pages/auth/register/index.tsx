@@ -65,10 +65,10 @@ const Register = () => {
       <div className="w-100 flex flex-col justify-center items-center">
         <Logo className="w-60" showText={false} />
         <p className="font-bold text-center">
-          SAPPERS MULTIPURPOSE COOPERATIVE SOCIETY LIMITED (BONNY CAMP)
+          NAOWA MULTIPURPOSE COOPERATIVE SOCIETY LIMITED
         </p>
         <p className="pt-6 text-center">
-          Fast and Easy Cooperative Sappers Multipurpose Cooperative helps over 13 thousand
+          Fast and Easy Cooperative NAOWA Multipurpose Cooperative helps over 13 thousand
           members achieve their financial goals by helping them save and get
           loans with ease
         </p>
