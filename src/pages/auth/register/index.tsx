@@ -68,9 +68,9 @@ const Register = () => {
           NAOWA MULTIPURPOSE COOPERATIVE SOCIETY LIMITED
         </p>
         <p className="pt-6 text-center">
-          Fast and Easy Cooperative NAOWA Multipurpose Cooperative helps over 13
-          thousand members achieve their financial goals by helping them save
-          and get loans with ease
+          Fast and Easy Cooperative NAOWA Multipurpose Cooperative helps over 13 thousand
+          members achieve their financial goals by helping them save and get
+          loans with ease
         </p>
         <div className="text-gray-200 text-xs flex gap-2 items-start mt-10">
           <p>Terms</p>
