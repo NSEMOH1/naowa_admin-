@@ -13,7 +13,7 @@ import { GoogleIcon } from "../../../components/icons";
 import { routes } from "../../../lib/routes";
 import { Logo } from "../../../components/icons/logo";
 import signupBg from "../../../assets/sign-up.svg";
-import { Building, Key, Mail, User2Icon } from "lucide-react";
+import { Key, Mail, User2Icon } from "lucide-react";
 import { useState } from "react";
 import api from "../../../api";
 import { departments } from "../../../api/data";
@@ -142,9 +142,6 @@ const Register = () => {
                 Department
               </FormLabel>
               <InputGroup>
-                <InputLeftElement pointerEvents="none">
-                  <Building color="white" />
-                </InputLeftElement>
                 <Select
                   value={formData.department}
                   onChange={handleChange}

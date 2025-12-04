@@ -170,7 +170,7 @@ export default function DashboardTable() {
             key={index}
             onClick={() => handleFilterClick(button.filter)}
             variant={activeFilter === button.filter ? "solid" : "outline"}
-            colorScheme={activeFilter === button.filter ? "blue" : "gray"}
+            colorScheme={activeFilter === button.filter ? "red" : "gray"}
             size="sm"
             className="transition-all duration-200"
             isLoading={loading}
