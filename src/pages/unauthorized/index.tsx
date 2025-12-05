@@ -2,11 +2,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-// import { UserRole } from '../../lib/types';
 
 const Unauthorized: React.FC = () => {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user} = useAuth();
 
     const handleGoBack = () => {
         navigate(-1);
@@ -17,6 +16,7 @@ const Unauthorized: React.FC = () => {
     };
 
     const handleLogout = () => {
+        
         navigate('/');
     };
 
@@ -26,6 +26,7 @@ const Unauthorized: React.FC = () => {
     //             return 'Staff';
     //         case UserRole.ADMIN:
     //             return 'Admin';
+         
     //         default:
     //             return 'User';
     //     }
@@ -85,7 +86,7 @@ const Unauthorized: React.FC = () => {
                                     </svg>
                                     <div className="text-left">
                                         {/* <p className="text-sm text-blue-800">
-                                            <span className="font-medium">Current Role:</span> {getRoleDisplayName(user)}
+                                            <span className="font-medium">Current Role:</span> {getRoleDisplayName(user.role)}
                                         </p> */}
                                         <p className="text-xs text-blue-600 mt-1">
                                             Logged in as: {user.email}
