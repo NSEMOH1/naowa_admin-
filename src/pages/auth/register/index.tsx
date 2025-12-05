@@ -9,7 +9,7 @@ import {
   Select,
   useToast,
 } from "@chakra-ui/react";
-import { GoogleIcon } from "../../../components/icons";
+// import { GoogleIcon } from "../../../components/icons";
 import { routes } from "../../../lib/routes";
 import { Logo } from "../../../components/icons/logo";
 import signupBg from "../../../assets/sign-up.svg";
@@ -68,9 +68,9 @@ const Register = () => {
           NAOWA MULTIPURPOSE COOPERATIVE SOCIETY LIMITED
         </p>
         <p className="pt-6 text-center">
-          Fast and Easy Cooperative NAOWA Multipurpose Cooperative helps over 13 thousand
-          members achieve their financial goals by helping them save and get
-          loans with ease
+          Empower members financially by promoting economic independence and
+          stability. Provide credit facilities with easy access to loans and
+          competitive rates
         </p>
         <div className="text-gray-200 text-xs flex gap-2 items-start mt-10">
           <p>Terms</p>
@@ -88,7 +88,7 @@ const Register = () => {
           boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <div className="flex flex-col items-center gap-4">
+        {/* <div className="flex flex-col items-center gap-4">
           <p className="text-white">Register with:</p>
           <Button
             leftIcon={<GoogleIcon />}
@@ -107,8 +107,8 @@ const Register = () => {
           <p className="text-white">
             --------------------------- OR ---------------------------
           </p>
-        </div>
-        <div className="mt-6">
+        </div> */}
+        <div className="mt-20">
           <div className="flex gap-2">
             <FormControl fontWeight="light">
               <FormLabel
