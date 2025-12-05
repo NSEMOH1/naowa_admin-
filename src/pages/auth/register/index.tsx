@@ -9,7 +9,7 @@ import {
   Select,
   useToast,
 } from "@chakra-ui/react";
-import { GoogleIcon } from "../../../components/icons";
+// import { GoogleIcon } from "../../../components/icons";
 import { routes } from "../../../lib/routes";
 import { Logo } from "../../../components/icons/logo";
 import signupBg from "../../../assets/sign-up.svg";
@@ -88,7 +88,7 @@ const Register = () => {
           boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <div className="flex flex-col items-center gap-4">
+        {/* <div className="flex flex-col items-center gap-4">
           <p className="text-white">Register with:</p>
           <Button
             leftIcon={<GoogleIcon />}
@@ -107,8 +107,8 @@ const Register = () => {
           <p className="text-white">
             --------------------------- OR ---------------------------
           </p>
-        </div>
-        <div className="mt-6">
+        </div> */}
+        <div className="mt-20">
           <div className="flex gap-2">
             <FormControl fontWeight="light">
               <FormLabel
