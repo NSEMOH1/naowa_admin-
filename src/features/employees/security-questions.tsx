@@ -12,7 +12,6 @@ interface SecurityQuestionsProps {
 
 export const SecurityQuestions = ({
     onSecurityDataChange,
-    onValidationChange,
     initialData = { question: '', answer: '' },
 }: SecurityQuestionsProps) => {
     const [question, setQuestion] = useState(initialData.question);
