@@ -12,8 +12,7 @@ export const routes = {
   },
   members: {
     index: "/members",
-    createCivilian: "/members/civilian",
-    createPersonel: "/members/personel",
+    new: "/members/new"
   },
   loan: {
     index: "/loan",

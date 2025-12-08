@@ -11,6 +11,7 @@ const Members = lazy(() => import("../pages/members/index.tsx"));
 const Loan = lazy(() => import("../pages/loan/index.tsx"));
 const Request = lazy(() => import("../pages/request/index.tsx"));
 const Termination = lazy(() => import("../pages/termination/index.tsx"));
+const NewMember = lazy(() => import("../pages/members/new.tsx"))
 const Uploads = lazy(() => import("../pages/upload/index.tsx"));
 const AccountManagement = lazy(
   () => import("../pages/account-management/index.tsx")
@@ -65,6 +66,14 @@ export const sappersRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={ROUTE_PERMISSIONS.members}>
             <Members />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={routes.members.new}
+        element={
+          <ProtectedRoute allowedRoles={ROUTE_PERMISSIONS.members}>
+            <NewMember />
           </ProtectedRoute>
         }
       />
