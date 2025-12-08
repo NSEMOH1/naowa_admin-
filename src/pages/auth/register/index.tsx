@@ -3,9 +3,11 @@ import {
   Button,
   FormControl,
   FormLabel,
+  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
+  InputRightElement,
   Select,
   useToast,
 } from "@chakra-ui/react";
@@ -13,7 +15,7 @@ import {
 import { routes } from "../../../lib/routes";
 import { Logo } from "../../../components/icons/logo";
 import signupBg from "../../../assets/sign-up.svg";
-import { Key, Mail, User2Icon } from "lucide-react";
+import { Eye, EyeClosed, Key, Mail, User2Icon } from "lucide-react";
 import { useState } from "react";
 import api from "../../../api";
 import { departments } from "../../../api/data";
@@ -22,6 +24,7 @@ const Register = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     full_name: "",
     department: "",
@@ -146,6 +149,7 @@ const Register = () => {
                   value={formData.department}
                   onChange={handleChange}
                   name="department"
+                  placeholder="Select Department"
                 >
                   {departments.map((data) => (
                     <option style={{ background: "black" }} value={data.value}>
@@ -185,13 +189,28 @@ const Register = () => {
               </InputLeftElement>
               <Input
                 fontSize={13}
-                type="text"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 name="password"
                 borderColor="white"
                 value={formData.password}
                 onChange={handleChange}
               />
+              <InputRightElement>
+                <IconButton
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  icon={
+                    showPassword ? (
+                      <EyeClosed color="white" />
+                    ) : (
+                      <Eye color="white" />
+                    )
+                  }
+                  onClick={() => setShowPassword(!showPassword)}
+                  variant="ghost"
+                  size="sm"
+                />
+              </InputRightElement>
             </InputGroup>
           </FormControl>
           <p className="text-xs text-blue-500">

@@ -9,11 +9,13 @@ import DataTable from "../../components/table";
 import type { Member, TableColumn } from "../../lib/types";
 import { useEffect, useMemo, useState } from "react";
 import MemberDetailsView from "./membersDetails";
-import { Eye, Trash2 } from "lucide-react";
+import { Eye, Plus, Trash2 } from "lucide-react";
 import ActionModal from "../../components/actionModal";
 import { useMembersData } from "../../hooks/useMember";
 import api from "../../api";
 import { exportToExcel } from "../../lib/excelExport";
+import { useNavigate } from "react-router-dom";
+import { routes } from "../../lib/routes";
 
 const membersColumns: TableColumn<Member>[] = [
   {
@@ -74,6 +76,7 @@ export default function MembersTable() {
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const toast = useToast();
+  const navigate = useNavigate();
   const { members, loading, pagination, loadMembers } = useMembersData();
   const [paginationState, setPaginationState] = useState({
     page: 1,
@@ -284,6 +287,13 @@ export default function MembersTable() {
           />
           <Button onClick={handleSearchClick} colorScheme="red">
             Search
+          </Button>
+          <Button
+            colorScheme="green"
+            onClick={() => navigate(routes.members.new)}
+          >
+            <Plus color="white" className="mr-2" />
+            Add New Member
           </Button>
         </div>
         <button

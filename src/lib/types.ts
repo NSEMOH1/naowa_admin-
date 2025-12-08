@@ -233,3 +233,35 @@ export interface Withdrawal {
     type: string;
   };
 }
+
+export interface PersonelRegistrationData {
+  email: string;
+  full_name: string;
+  username: string;
+  password: string;
+  gender: string;
+  phone: string;
+  address: string;
+  state_of_origin: string;
+  pin: string;
+  occupation: string;
+  place_of_work: string;
+  marital_status: string;
+  spouse_name?: string;
+  date_of_birth: Date;
+  monthly_deduction: string;
+  bank_name: string;
+  account_name: string
+  account_number: string;
+  profile_picture: File | null;
+  security_question: string;
+  security_answer: string;
+  nin_document: File | null;
+  kin_first_name: string;
+  kin_last_name: string;
+  relationship: string;
+  kin_phone: string;
+  kin_email: string;
+  kin_address: string;
+  kin_gender: string;
+}
