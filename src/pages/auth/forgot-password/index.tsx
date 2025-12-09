@@ -64,7 +64,7 @@ const ForgotPassword = () => {
     confirmPassword: "",
     isPasswordValid: false,
     isConfirmPasswordValid: false,
-    isMember: true,
+    isMember: false,
   });
 
   useSteps({
