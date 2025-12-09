@@ -68,7 +68,7 @@ const Register = () => {
       <div className="w-100 flex flex-col justify-center items-center">
         <Logo className="w-60" showText={false} />
         <p className="font-bold text-center">
-          NAOWA MULTIPURPOSE COOPERATIVE SOCIETY LIMITED
+          NAOWA MULTIPURPOSE COOPERATIVE SOCIETY
         </p>
         <p className="pt-6 text-center">
           Empower members financially by promoting economic independence and

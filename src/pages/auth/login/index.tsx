@@ -115,7 +115,12 @@ const Login = () => {
               >
                 Password
               </FormLabel>
-              <p className="text-[#ECF15E] cursor-pointer">Forgot Password?</p>
+              <p
+                className="text-[#ECF15E] cursor-pointer"
+                onClick={() => navigate(routes.auth.forgotPassword)}
+              >
+                Forgot Password?
+              </p>
             </div>
             <InputGroup>
               <InputLeftElement pointerEvents="none">

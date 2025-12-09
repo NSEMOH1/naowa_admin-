@@ -25,7 +25,6 @@ export const Header = () => {
             <div className="flex items-center gap-2">
                 <Avatar src={user?.full_name} size="md" name={user?.full_name} />
                 <div>
-                    <p className="text-xs">ID: <span className="font-bold">{user?.id}</span></p>
                     <p className="font-bold w-[150px]">{user?.full_name}</p>
                     <p className="text-xs">{getGreeting()}</p>
                 </div>

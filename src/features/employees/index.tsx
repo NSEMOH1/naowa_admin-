@@ -16,6 +16,7 @@ import api from "../../api";
 import { exportToExcel } from "../../lib/excelExport";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../../lib/routes";
+import { useAuth } from "../../hooks/useAuth";
 
 const membersColumns: TableColumn<Member>[] = [
   {
@@ -76,6 +77,7 @@ export default function MembersTable() {
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const toast = useToast();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { members, loading, pagination, loadMembers } = useMembersData();
   const [paginationState, setPaginationState] = useState({
@@ -113,6 +115,14 @@ export default function MembersTable() {
   };
 
   const handleDelete = async (selectedRows: Member[]) => {
+    if (user?.role !== "SUPER_ADMIN") {
+      toast({
+        title: "Error",
+        description: "You are unauthorized to perform this action",
+        status: "error",
+      });
+      return;
+    }
     if (selectedRows.length !== 1) {
       toast({
         title: "Error",
@@ -148,6 +158,18 @@ export default function MembersTable() {
         description: errorMessage,
         status: "error",
       });
+    }
+  };
+
+  const addNewMember = () => {
+    if (user?.role !== "SUPER_ADMIN") {
+      toast({
+        title: "Error",
+        description: "You are unauthorized to perform this action",
+        status: "error",
+      });
+    } else {
+      navigate(routes.members.new);
     }
   };
 
@@ -288,10 +310,7 @@ export default function MembersTable() {
           <Button onClick={handleSearchClick} colorScheme="red">
             Search
           </Button>
-          <Button
-            colorScheme="green"
-            onClick={() => navigate(routes.members.new)}
-          >
+          <Button colorScheme="green" onClick={addNewMember}>
             <Plus color="white" className="mr-2" />
             Add New Member
           </Button>

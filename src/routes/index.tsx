@@ -11,7 +11,10 @@ const Members = lazy(() => import("../pages/members/index.tsx"));
 const Loan = lazy(() => import("../pages/loan/index.tsx"));
 const Request = lazy(() => import("../pages/request/index.tsx"));
 const Termination = lazy(() => import("../pages/termination/index.tsx"));
-const NewMember = lazy(() => import("../pages/members/new.tsx"))
+const NewMember = lazy(() => import("../pages/members/new.tsx"));
+const ForgotPassword = lazy(
+  () => import("../pages/auth/forgot-password/index.tsx")
+);
 const Uploads = lazy(() => import("../pages/upload/index.tsx"));
 const AccountManagement = lazy(
   () => import("../pages/account-management/index.tsx")
@@ -30,7 +33,7 @@ const LoanRepaymentReport = lazy(
   () => import("../pages/report/repayment/index.tsx")
 );
 const Savings = lazy(() => import("../pages/savings/index.tsx"));
-const Withdrawal = lazy(() => import("../pages/withdrawal/index.tsx"))
+const Withdrawal = lazy(() => import("../pages/withdrawal/index.tsx"));
 const Unauthorized = lazy(() => import("../pages/unauthorized/index.tsx"));
 
 const ROUTE_PERMISSIONS = {
@@ -51,6 +54,7 @@ export const sappersRoutes = () => {
     <>
       <Route index element={<Login />} />
       <Route path={routes.auth.register.index} element={<Register />} />
+      <Route path={routes.auth.forgotPassword} element={<ForgotPassword />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
       <Route
