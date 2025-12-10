@@ -53,11 +53,7 @@ const membersColumns: TableColumn<Member>[] = [
     render: (status: "ACTIVE" | "INACTIVE") => (
       <Badge
         colorScheme={
-          status === "ACTIVE"
-            ? "green"
-            : status === "INACTIVE"
-            ? "red"
-            : "red"
+          status === "ACTIVE" ? "green" : status === "INACTIVE" ? "red" : "red"
         }
         px={3}
         py={1}
@@ -108,6 +104,12 @@ export default function MembersTable() {
     onClose: onDeactivateClose,
   } = useDisclosure();
 
+  const {
+    isOpen: isActivateOpen,
+    onOpen: onActivateOpen,
+    onClose: onActivateClose,
+  } = useDisclosure();
+
   const handleViewDetails = (selectedRows: Member[]) => {
     if (selectedRows.length === 1) {
       setSelectedMember(selectedRows[0]);
@@ -121,7 +123,7 @@ export default function MembersTable() {
   };
 
   const handleDelete = async (selectedRows: Member[]) => {
-    if (user?.role !== "SUPER_ADMIN") {
+    if (user?.role !== "ADMIN") {
       toast({
         title: "Error",
         description: "You are unauthorized to perform this action",
@@ -205,9 +207,47 @@ export default function MembersTable() {
       });
     }
   };
+  const handleActivate = async (selectedRows: Member[]) => {
+    if (selectedRows.length !== 1) {
+      toast({
+        title: "Error",
+        description: "Please select exactly one member to delete",
+        status: "error",
+      });
+      return;
+    }
+
+    const member = selectedRows[0];
+    try {
+      await api.put(`/api/member/${member.id}/activate`);
+      toast({ title: "Member Activated Successfully", status: "success" });
+      onActivateOpen();
+      loadMembers({
+        page: paginationState.page,
+        limit: paginationState.limit,
+        status:
+          activeFilter === "all"
+            ? undefined
+            : (activeFilter as "APPROVED" | "PENDING" | "REJECTED"),
+      });
+    } catch (err) {
+      let errorMessage = "Deactivation Failed";
+      if (typeof err === "object" && err !== null && "response" in err) {
+        const response = (err as any).response;
+        if (response && response.data && response.data.message) {
+          errorMessage = response.data.message;
+        }
+      }
+      toast({
+        title: "Error",
+        description: errorMessage,
+        status: "error",
+      });
+    }
+  };
 
   const addNewMember = () => {
-    if (user?.role !== "SUPER_ADMIN") {
+    if (user?.role !== "ADMIN") {
       toast({
         title: "Error",
         description: "You are unauthorized to perform this action",
@@ -226,7 +266,14 @@ export default function MembersTable() {
       variant: "outline",
       onClick: handleViewDetails,
     },
-     {
+    {
+      name: "Activate",
+      icon: <Eye size={16} />,
+      colorScheme: "green",
+      variant: "outline",
+      onClick: handleActivate,
+    },
+    {
       name: "Deactivate",
       icon: <Eye size={16} />,
       colorScheme: "purple",
@@ -464,6 +511,14 @@ export default function MembersTable() {
         status="success"
         title=""
         message={`Member Successfully Deactivated`}
+      />
+
+      <ActionModal
+        isOpen={isActivateOpen}
+        onClose={onActivateClose}
+        status="success"
+        title=""
+        message={`Member Successfully Activated`}
       />
     </div>
   );
