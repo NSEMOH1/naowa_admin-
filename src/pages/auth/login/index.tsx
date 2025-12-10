@@ -165,7 +165,7 @@ const Login = () => {
           >
             Staff Sign In
           </Button>
-          <p className="text-xs text-blue-500 mt-4 text-center">
+          {/* <p className="text-xs text-blue-500 mt-4 text-center">
             Do not have an account?{" "}
             <span
               className="cursor-pointer text-[#ECF15E]"
@@ -173,7 +173,7 @@ const Login = () => {
             >
               Sign Up
             </span>
-          </p>
+          </p> */}
         </div>
       </div>
       <div className="text-gray-200 text-xs flex gap-2 items-start mt-4">
