@@ -44,9 +44,9 @@ const ROUTE_PERMISSIONS = {
   termination: [UserRole.STAFF, UserRole.ADMIN],
   uploads: [UserRole.STAFF, UserRole.ADMIN],
   accountmanagement: [UserRole.ADMIN],
-  report: [UserRole.ADMIN],
-  savings: [UserRole.ADMIN],
-  withdrawal: [UserRole.ADMIN],
+  report: [UserRole.STAFF, UserRole.ADMIN],
+  savings: [UserRole.STAFF, UserRole.ADMIN],
+  withdrawal: [UserRole.STAFF, UserRole.ADMIN],
 };
 
 export const sappersRoutes = () => {

@@ -5,6 +5,7 @@ import DataTable from '../../components/table';
 import { Badge, Button, Input, HStack } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/react';
 import api from '../../api';
+import { useMembersData } from '../../hooks/useMember';
 
 interface ITermination {
     id: string;
@@ -27,6 +28,7 @@ const Termination = () => {
     const [filteredTerminations, setFilteredTerminations] = useState<ITermination[]>([]);
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndDate] = useState<string>('');
+    const { members } = useMembersData()
     const [pagination, setPagination] = useState({
         page: 1,
         limit: 10,
@@ -42,21 +44,9 @@ const Termination = () => {
         },
         {
             name: "Approved Terminations",
-            value: terminations?.filter(t => t.status === 'APPROVED')?.length || 0,
+            value: members?.filter(t => t.status === 'INACTIVE')?.length || 0,
             color: "#A6039F",
             bg: "#FFDDFD"
-        },
-        {
-            name: "Pending Terminations",
-            value: terminations?.filter(t => t.status === 'PENDING')?.length || 0,
-            color: "#FEC53D",
-            bg: "#FFDDFD"
-        },
-        {
-            name: "Rejected Terminations",
-            value: terminations?.filter(t => t.status === 'REJECTED')?.length || 0,
-            color: "red",
-            bg: "#FFCCCB"
         },
     ];
 
