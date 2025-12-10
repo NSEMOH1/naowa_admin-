@@ -50,13 +50,13 @@ const membersColumns: TableColumn<Member>[] = [
     title: "Status",
     dataIndex: "status",
     key: "status",
-    render: (status: "APPROVED" | "PENDING" | "REJECTED") => (
+    render: (status: "ACTIVE" | "INACTIVE") => (
       <Badge
         colorScheme={
-          status === "APPROVED"
+          status === "ACTIVE"
             ? "green"
-            : status === "PENDING"
-            ? "yellow"
+            : status === "INACTIVE"
+            ? "red"
             : "red"
         }
         px={3}
@@ -100,6 +100,12 @@ export default function MembersTable() {
     isOpen: isDeleteOpen,
     onOpen: onDeleteOpen,
     onClose: onDeleteClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isDeactivateOpen,
+    onOpen: onDeactivateOpen,
+    onClose: onDeactivateClose,
   } = useDisclosure();
 
   const handleViewDetails = (selectedRows: Member[]) => {
@@ -161,6 +167,45 @@ export default function MembersTable() {
     }
   };
 
+  const handleDeactivate = async (selectedRows: Member[]) => {
+    if (selectedRows.length !== 1) {
+      toast({
+        title: "Error",
+        description: "Please select exactly one member to delete",
+        status: "error",
+      });
+      return;
+    }
+
+    const member = selectedRows[0];
+    try {
+      await api.put(`/api/member/${member.id}/deactivate`);
+      toast({ title: "Member Deactivated Successfully", status: "success" });
+      onDeactivateOpen();
+      loadMembers({
+        page: paginationState.page,
+        limit: paginationState.limit,
+        status:
+          activeFilter === "all"
+            ? undefined
+            : (activeFilter as "APPROVED" | "PENDING" | "REJECTED"),
+      });
+    } catch (err) {
+      let errorMessage = "Deactivation Failed";
+      if (typeof err === "object" && err !== null && "response" in err) {
+        const response = (err as any).response;
+        if (response && response.data && response.data.message) {
+          errorMessage = response.data.message;
+        }
+      }
+      toast({
+        title: "Error",
+        description: errorMessage,
+        status: "error",
+      });
+    }
+  };
+
   const addNewMember = () => {
     if (user?.role !== "SUPER_ADMIN") {
       toast({
@@ -178,8 +223,15 @@ export default function MembersTable() {
       name: "View Details",
       icon: <Eye size={16} />,
       colorScheme: "blue",
-      variant: "solid",
+      variant: "outline",
       onClick: handleViewDetails,
+    },
+     {
+      name: "Deactivate",
+      icon: <Eye size={16} />,
+      colorScheme: "purple",
+      variant: "outline",
+      onClick: handleDeactivate,
     },
     {
       name: "Delete",
@@ -401,9 +453,17 @@ export default function MembersTable() {
       <ActionModal
         isOpen={isDeleteOpen}
         onClose={onDeleteClose}
-        status="error"
+        status="success"
         title=""
         message={`Member Successfully Deleted`}
+      />
+
+      <ActionModal
+        isOpen={isDeactivateOpen}
+        onClose={onDeactivateClose}
+        status="success"
+        title=""
+        message={`Member Successfully Deactivated`}
       />
     </div>
   );
